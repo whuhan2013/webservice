@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<!-- 
+	通过服务器启动，解析spring 的配置，可以解决第一次访问
+	org.apache.cxf.transport.servlet.CXFServlet
+	去解析spring配置,导致第一次访问webservice 慢的问题...
+	 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/cxf-servlet.xml</param-value>
+	</context-param>
+	
+	
+	<servlet>
+		<!-- 配置cxf -->
+		<servlet-name>cxf</servlet-name>
+		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+		<init-param>
+			<!-- 配置Spring的配置文件 -->
+			<param-name>config-location</param-name>
+			<!-- 通过servlet 去解析此配置文件，会导致第一次访问很慢，
+		这是一个spring 的配置文件，
+			 -->
+			<param-value>/WEB-INF/cxf-servlet.xml</param-value>
+			<!-- 
+				cxf 的启动原理，依托servlet 
+				首先我们在浏览器上面敲地址栏，进入到
+				org.apache.cxf.transport.servlet.CXFServlet
+				执行init 方法  /WEB-INF/cxf-servlet.xml 配置文件
+				//request 
+				String basePath=http://localhost:8080/cxfspringweb/ws/helloService
+			
+				JaxWsServerFactoryBean bean=new JaxWsServerFactoryBean();
+				bean.setAddress(basePath);//设置服务的访问地址
+				bean.setServerClass(cn.itcast.cxf.spring.HelloService.class);//设置服务的接口
+				bean.setServerBean(Class.for("cn.itcast.cxf.spring.HelloService").newInstance());//设置服务的接口实现类
+				bean.create();//发布
+			 -->
+			
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>cxf</servlet-name>
+		<url-pattern>/ws/*</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>
+

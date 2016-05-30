@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+            http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+            http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+		<!-- 引入CXF Bean定义如下,早期的版本中使用 -->
+		<import resource="classpath:META-INF/cxf/cxf.xml" />
+		<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+		<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+		<!-- 通过配置文件的方式发布一个不带接口的webservice -->
+		<!-- 1,id,2,服务对外的访问地址，3，提供服务的实现类..  -->
+		<jaxws:endpoint id="helloService" address="/helloService" implementor="cn.itcast.cxf.spring.HelloService"></jaxws:endpoint>
+		<!-- 通过此配置发布一个带接口的webservice  -->
+		<!-- 
+			1,id
+			2,服务对外的访问地址
+			3，接口的类型
+		
+		 -->
+		 
+		<jaxws:server id="makeCallService" address="/makeCallService" serviceClass="cn.itcast.cxf.spring.call.CallService">
+			<jaxws:serviceBean>
+			<!-- 接口的实现类... -->
+				<bean class="cn.itcast.cxf.spring.call.CallServiceImpl"></bean>
+			</jaxws:serviceBean>
+			<!-- 通过配置文件的方式添加拦截器。。。 -->
+			<!-- 添加请求的消息拦截器 -->
+			<jaxws:inInterceptors>
+				<bean class="org.apache.cxf.interceptor.LoggingInInterceptor"></bean>
+			</jaxws:inInterceptors>
+			
+			<!-- 添加响应的消息拦截器.. -->
+			<jaxws:outInterceptors>
+				 <bean class="org.apache.cxf.interceptor.LoggingOutInterceptor"></bean>
+			</jaxws:outInterceptors>
+		
+		</jaxws:server>
+		
+	
+	
+</beans>
+
